@@ -1,0 +1,30 @@
+# Node.js dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist/
+
+# Environment / Secrets
+.env
+.env.*
+!.env.template
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing / Coverage
+coverage/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
