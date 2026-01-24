@@ -6,6 +6,13 @@ node_modules/
 out/
 dist/
 
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Turbopack cache
+.turbo/
+
 # Environment / Secrets
 .env
 .env.*
@@ -19,6 +26,16 @@ pnpm-debug.log*
 
 # Testing / Coverage
 coverage/
+playwright-report/
+playwright/.cache/
+test-results/
+
+# ESLint
+.eslintcache
+
+# PWA build artifacts
+public/sw.js
+public/workbox-*.js
 
 # IDE / Editor
 .vscode/
