@@ -1,4 +1,4 @@
-<h1><img src=".github/assets/lemello-horizontal-yellow.svg" alt="Lemello" height="28px" vertical-align="middle"> Web App</h1>
+<h1><img src=".github/assets/lemello-horizontal-yellow.svg" alt="Lemello" height="28px"> Web App</h1>
 
 The user-facing Progressive Web Application for Lemello — an AI-powered cooking platform that transforms nervous recipe-followers into confident recipe-creators.
 
