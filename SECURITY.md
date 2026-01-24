@@ -80,5 +80,5 @@ This security policy applies to:
 
 Backend security issues should be reported to the appropriate repository:
 
-- Backend API security: lemello-app/backend
-- Infrastructure security: lemello-app/infra
+- Backend API security: [lemello-app/backend](https://github.com/lemello-app/backend)
+- Infrastructure security: [lemello-app/infra](https://github.com/lemello-app/infra)
