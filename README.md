@@ -1,14 +1,24 @@
-# ChefAI Frontend
+<h1><img src=".github/assets/lemello-horizontal-yellow.svg" alt="Lemello" height="28px"> Web App</h1>
 
-The **ChefAI Frontend** is the user-facing web application for ChefAI. It provides the interactive
-experience for:
+The user-facing Progressive Web Application for Lemello — an AI-powered cooking platform that transforms nervous recipe-followers into confident recipe-creators.
 
-- AI-assisted recipe creation ("Creation Studio")
-- Browsing, forking, and remixing recipes
-- Social interactions around cooking and sharing
-- User profiles and session management
+---
 
-The frontend is built with **Next.js** and communicates with the ChefAI Backend via a secure API.
+## Features
+
+- **Creation Studio** — AI-assisted recipe creation with an encouraging Sous-Chef that teaches as you cook
+- **Recipe Discovery** — Browse, fork, and remix recipes from the community
+- **Social Cooking** — Share creations, build your cookbook, and create recipes worth passing down
+- **Cross-Device Experience** — Works seamlessly on desktop, tablet, and mobile as a PWA
+
+---
+
+## Related Repositories
+
+| Repository | Description |
+|------------|-------------|
+| [lemello-app/backend](https://github.com/lemello-app/backend) | FastAPI backend and AI services |
+| [lemello-app/infra](https://github.com/lemello-app/infra) | Terraform, Docker, and deployment configs |
 
 ---
 
@@ -33,7 +43,7 @@ The frontend is built with **Next.js** and communicates with the ChefAI Backend 
 
 ## Deployment Target
 
-ChefAI Frontend is deployed on **DigitalOcean App Platform** using containerized deployments.
+Lemello Web App is deployed on **DigitalOcean App Platform** using containerized deployments.
 
 ### Infrastructure Overview
 
@@ -43,7 +53,7 @@ ChefAI Frontend is deployed on **DigitalOcean App Platform** using containerized
 
 ### Build Once, Deploy Twice
 
-The frontend follows an immutable deployment strategy:
+The webapp follows an immutable deployment strategy:
 
 1. Docker images are built once and pushed to DOCR
 2. The same image digest is deployed to both Staging and Production
@@ -53,11 +63,11 @@ The frontend follows an immutable deployment strategy:
 
 ## Why Next.js 16?
 
-Next.js 16 introduces critical features for the ChefAI user experience:
+Next.js 16 introduces critical features for the Lemello user experience:
 
 ### Partial Prerendering (PPR)
 
-PPR enables a hybrid rendering model ideal for the "Creation Studio":
+PPR enables a hybrid rendering model ideal for the Creation Studio:
 
 - **Static Shell:** Sidebar, navigation, and chrome are pre-rendered at build time
 - **Dynamic Stream:** Chat interface and AI responses are streamed dynamically
@@ -94,8 +104,8 @@ export default nextConfig;
 ### Clone the repository
 
 ```bash
-git clone <repo-url>
-cd chefai-frontend
+git clone git@github.com:lemello-app/webapp.git
+cd webapp
 ```
 
 ### Install dependencies
@@ -157,8 +167,7 @@ http://localhost:3000
 
 ## Containerization
 
-The frontend uses a multi-stage Docker build with Next.js "standalone" output mode for lean,
-production-ready images.
+The webapp uses a multi-stage Docker build with Next.js "standalone" output mode for lean, production-ready images.
 
 ### Why Standalone Mode?
 
@@ -191,13 +200,13 @@ FROM node:24-alpine AS runner
 ### Building the Container
 
 ```bash
-docker build -t chefai-frontend:latest .
+docker build -t lemello-webapp:latest .
 ```
 
 ### Running Locally with Docker
 
 ```bash
-docker run -p 3000:3000 --env-file .env.local chefai-frontend:latest
+docker run -p 3000:3000 --env-file .env.local lemello-webapp:latest
 ```
 
 ---
@@ -208,9 +217,7 @@ When deploying to DigitalOcean App Platform, keep these constraints in mind:
 
 ### Middleware and Proxy Headers
 
-DigitalOcean App Platform load balancers handle SSL termination. The container receives traffic
-on HTTP (typically port 8080). This can cause issues with Next.js Middleware that relies on
-protocol detection.
+DigitalOcean App Platform load balancers handle SSL termination. The container receives traffic on HTTP (typically port 8080). This can cause issues with Next.js Middleware that relies on protocol detection.
 
 **The Issue:** Middleware may incorrectly infer `http` instead of `https`, causing:
 
@@ -235,8 +242,7 @@ export function middleware(request: NextRequest) {
 
 ### Ephemeral Filesystem
 
-App Platform containers have ephemeral file systems. Do not write persistent data to disk.
-Use external storage (DigitalOcean Spaces) for user uploads or generated content.
+App Platform containers have ephemeral file systems. Do not write persistent data to disk. Use external storage (DigitalOcean Spaces) for user uploads or generated content.
 
 ### Environment Variables
 
@@ -248,19 +254,11 @@ Environment-specific configuration is injected via App Platform:
 
 ---
 
-## Project Structure
-
-```text
-TBD
-```
-
----
-
 ## API Communication
 
-* All backend communication goes through the ChefAI Backend API
-* API base URLs are configured via environment variables
-* Authentication headers and session handling are centralized in the API client layer
+- All backend communication goes through the [Lemello Backend API](https://github.com/lemello-app/backend)
+- API base URLs are configured via environment variables
+- Authentication headers and session handling are centralized in the API client layer
 
 ---
 
@@ -282,36 +280,18 @@ npm run start
 
 ## Security Notes
 
-* No secrets are committed to the repository
-* `.env.local` and all `.env.*` files (except `.env.template`) are ignored by Git
-* Only explicitly public variables are exposed to the browser
-* Authentication and authorization are enforced server-side
-
----
-
-## Suggested Additions
-
-Consider adding the following sections as the project matures:
-
-- [ ] **Component Library:** Documentation for shared UI components
-- [ ] **State Management:** Client-side state architecture (React Context, Zustand, etc.)
-- [ ] **Testing:** Instructions for running unit, integration, and E2E tests
-- [ ] **CI/CD Pipeline:** GitHub Actions workflow documentation
-- [ ] **Accessibility:** WCAG compliance guidelines and testing
-- [ ] **Performance:** Core Web Vitals monitoring and optimization strategies
-- [ ] **WebSocket Integration:** Real-time chat implementation for Creation Studio
+- No secrets are committed to the repository
+- `.env.local` and all `.env.*` files (except `.env.template`) are ignored by Git
+- Only explicitly public variables are exposed to the browser
+- Authentication and authorization are enforced server-side
 
 ---
 
 ## License
 
-Do NOT modify or remove this copyright and confidentiality notice.
+**Copyright © Lemello, LLC. All rights reserved.**
 
-**Copyright © Nikolai Alexander. All rights reserved.**
-
-The code contained herein is CONFIDENTIAL to Nikolai Alexander. Portions
+The code contained herein is CONFIDENTIAL to Lemello, LLC. Portions
 may also be trade secret. Any use, duplication, derivation, distribution or
 disclosure of this code, for any reason, not expressly authorized in writing
-by Nikolai Alexander is prohibited. All rights are expressly reserved by Nikolai Alexander.
-
----
+by Lemello, LLC is prohibited. All rights are expressly reserved by Lemello, LLC.
