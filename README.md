@@ -148,7 +148,7 @@ cp .env.template .env.local
 
 3. Runtime injection (BODT):
 
-- Client-side `NEXT_PUBLIC_*` values are injected at runtime via `window.__ENV`
+- Planned: client-side `NEXT_PUBLIC_*` values will be injected at runtime via `window.__ENV` (see tracking issue LMLO-37). This behavior is not yet implemented in this repo.
 - Do not put secrets in `NEXT_PUBLIC_*` variables
 
 4. See `.env.template` for the full list of defaults and options.
