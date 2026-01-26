@@ -130,24 +130,28 @@ pnpm install
 
 ---
 
-## Environment Configuration
+## Environment Setup
 
-Frontend configuration is provided via environment variables.
-
-Copy the template and adjust values as needed:
+1. Copy the environment template:
 
 ```bash
 cp .env.template .env.local
 ```
 
-Example variables:
+2. Configure required values:
 
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_APP_ENV=local
-```
+| Variable | Description | How to Get |
+|----------|-------------|------------|
+| `NODE_ENV` | Build-time environment | Set `development` for local |
+| `API_URL` | Server-side backend URL | Use your local backend, e.g. `http://localhost:8000` |
+| `NEXT_PUBLIC_API_URL` | Client-side backend URL | Same as `API_URL` for local |
 
-⚠️ Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser.
+3. Runtime injection (BODT):
+
+- Planned: client-side `NEXT_PUBLIC_*` values will be injected at runtime via `window.__ENV` (see tracking issue LMLO-37). This behavior is not yet implemented in this repo.
+- Do not put secrets in `NEXT_PUBLIC_*` variables
+
+4. See `.env.template` for the full list of defaults and options.
 
 ---
 
