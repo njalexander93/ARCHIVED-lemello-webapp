@@ -1,9 +1,14 @@
-import type { Metadata } from "next";
-import "./globals.css";
+/**
+ * @fileoverview Root layout for the Lemello webapp.
+ */
+
+import type { Metadata } from 'next';
+
+import './globals.css';
 
 export const metadata: Metadata = {
   title: "Lemello - Today's recipes. Tomorrow's traditions.",
-  description: "Transform from recipe-follower to recipe-creator with AI guidance",
+  description: 'Transform from recipe-follower to recipe-creator with AI guidance',
 };
 
 export default function RootLayout({
@@ -13,6 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      {/* App-wide layout wrapper for all pages. */}
       <body>{children}</body>
     </html>
   );

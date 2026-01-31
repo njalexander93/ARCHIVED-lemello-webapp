@@ -1,10 +1,14 @@
-import type { NextConfig } from "next";
+/**
+ * @fileoverview Next.js configuration for the Lemello webapp.
+ */
+
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   // Enable Partial Prerendering for instant load UX
   cacheComponents: true,
   // Standalone output for Docker deployment
-  output: "standalone",
+  output: 'standalone',
 };
 
 export default nextConfig;

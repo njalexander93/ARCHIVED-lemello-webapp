@@ -1,29 +1,37 @@
+/* Global styles for the Lemello webapp. */
+@import url(https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap);
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 :root {
   /* Light Mode */
-  --light-primary: #FFCA28;
-  --light-secondary: #F5F1EB;
-  --light-accent: #7CB69D;
-  --light-background: #FEFEFE;
-  --light-surface: #FEFEFE;
-  --light-text: #3D3833;
-  --light-text-muted: #6B6560;
-  --light-border: #E8E4DE;
+  --light-primary: #ffca28;
+  --light-secondary: #f5f1eb;
+  --light-accent: #7cb69d;
+  --light-background: #fefefe;
+  --light-surface: #fefefe;
+  --light-text: #3d3833;
+  --light-text-muted: #6b6560;
+  --light-border: #e8e4de;
   
   /* Dark Mode (Olive Night) */
-  --dark-primary: #FFCA28;
+  --dark-primary: #ffca28;
   --dark-secondary: #272824;
-  --dark-accent: #8AC4A8;
-  --dark-background: #191A17;
+  --dark-accent: #8ac4a8;
+  --dark-background: #191a17;
   --dark-surface: #222420;
-  --dark-text: #F2F1EC;
-  --dark-text-muted: #95968E;
-  --dark-border: #3A3C36;
+  --dark-text: #f2f1ec;
+  --dark-text-muted: #95968e;
+  --dark-border: #3a3c36;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #191a17;
 }
 
 body {
