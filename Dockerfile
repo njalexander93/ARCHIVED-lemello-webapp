@@ -47,7 +47,7 @@ RUN npm ci
 
 # Copy Next.js configuration
 COPY next.config.ts tsconfig.json tailwind.config.ts postcss.config.mjs ./
-COPY .eslintrc.json ./
+COPY eslint.config.cjs ./
 
 # Expose port
 EXPOSE 3000

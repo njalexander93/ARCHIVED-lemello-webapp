@@ -6,6 +6,7 @@
 @tailwind utilities;
 
 :root {
+  /* Brand tokens are stable and used across future components. */
   /* Light Mode */
   --light-primary: #ffca28;
   --light-secondary: #f5f1eb;
