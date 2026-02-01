@@ -41,6 +41,14 @@ The user-facing Progressive Web Application for Lemello — an AI-powered cookin
 
 ---
 
+## Code Style
+
+- [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)
+- [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html)
+- [Google HTML/CSS Style Guide](https://google.github.io/styleguide/htmlcssguide.html)
+
+---
+
 ## Deployment Target
 
 Lemello Web App is deployed on **DigitalOcean App Platform** using containerized deployments.
@@ -166,6 +174,32 @@ The application will be available at:
 ```
 http://localhost:3000
 ```
+
+---
+
+## Testing
+
+```bash
+# Lint and typecheck
+npm run lint
+npm run typecheck
+
+# Unit and integration tests
+npm run test:unit
+npm run test:integration
+npm run test:ci
+
+# E2E tests
+npm run test:e2e
+npm run test:e2e:ci
+```
+
+Notes:
+
+- ESLint uses the flat config in `eslint.config.cjs` (Next.js 16 no longer
+  supports `next lint`).
+- If Playwright browsers are missing locally, run `npx playwright install`
+  before `npm run test:e2e`.
 
 ---
 
