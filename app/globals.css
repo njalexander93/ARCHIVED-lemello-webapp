@@ -32,7 +32,14 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #191a17;
+  background: #fefefe;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background: #191a17;
+  }
 }
 
 body {
