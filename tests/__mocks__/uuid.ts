@@ -1,0 +1,5 @@
+/**
+ * @fileoverview Jest mock for UUID generation.
+ */
+
+export const v7 = (): string => '00000000-0000-7000-8000-000000000000';

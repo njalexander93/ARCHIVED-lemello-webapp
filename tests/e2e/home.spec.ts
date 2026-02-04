@@ -1,8 +1,8 @@
 /**
- * @fileoverview E2E checks for the home page.
+ * @fileoverview Playwright E2E checks for the home page.
  */
 
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('home page shows coming soon', async ({ page }) => {
   // Navigate to the home page served by the app.

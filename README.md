@@ -203,6 +203,70 @@ Notes:
 
 ---
 
+## Logging
+
+The webapp uses structured logging with correlation IDs to trace requests
+end-to-end across client and server.
+
+### Server-side logging (API routes, Server Components)
+
+```typescript
+import { serverLogger, withCorrelationId } from '@/lib/logger/server';
+import { generateCorrelationId } from '@/lib/correlation';
+
+export async function GET(request: Request) {
+  // Extract or generate correlation ID from request headers.
+  const correlationId =
+    request.headers.get('x-correlation-id') ?? generateCorrelationId();
+
+  // Wrap handler in correlation context for request isolation.
+  return withCorrelationId(correlationId, async () => {
+    const logger = serverLogger.child({ module: 'api/recipes' });
+    logger.info({ action: 'fetch' }, 'Fetching recipes');
+    return Response.json({ ok: true });
+  });
+}
+```
+
+**Note**: Server-side correlation IDs use `AsyncLocalStorage` for safe concurrent request isolation. Always wrap route handlers with `withCorrelationId()` to ensure correlation IDs are properly scoped.
+
+### Client-side logging (React components)
+
+```typescript
+'use client';
+
+import { useEffect } from 'react';
+import { clientLogger } from '@/lib/logger/client';
+import { useCorrelationId } from '@/contexts/CorrelationContext';
+
+export function RecipeList() {
+  const correlationId = useCorrelationId();
+
+  useEffect(() => {
+    clientLogger.info(
+      { correlationId, module: 'RecipeList', action: 'mount' },
+      'Component mounted'
+    );
+  }, [correlationId]);
+
+  return null;
+}
+```
+
+### Environment variables
+
+- `LOG_LEVEL`: Server log level (`trace|debug|info|warn|error|fatal`).
+- `NEXT_PUBLIC_LOG_LEVEL`: Client log level (`trace|debug|info|warn|error|fatal`).
+- `NEXT_PUBLIC_HTTP_TIMEOUT_MS`: HTTP client request timeout in milliseconds (default: `10000`).
+
+### More examples
+
+See:
+- `examples/logging-example.tsx` for server-side patterns.
+- `examples/logging-example-client.tsx` for client-side patterns.
+
+---
+
 ## Containerization
 
 The webapp uses a multi-stage Docker build with Next.js "standalone" output mode for lean, production-ready images.

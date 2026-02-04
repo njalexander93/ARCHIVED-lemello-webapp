@@ -1,5 +1,5 @@
 /**
- * @fileoverview Integration checks for home page content.
+ * @fileoverview Integration checks for Lemello home page content.
  */
 
 import { render, screen } from '@testing-library/react';

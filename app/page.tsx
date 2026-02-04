@@ -1,5 +1,5 @@
 /**
- * @fileoverview Landing page for the Lemello webapp.
+ * @fileoverview Landing page view for the Lemello webapp.
  */
 
 import Image from 'next/image';
