@@ -34,12 +34,13 @@ export default function GlobalError({
       type: 'global_error',
       digest: error.digest,
       errorName: error.name,
+      errorMessage: error.message,
     });
 
     console.error(
       JSON.stringify(payload)
     );
-  }, [error.name, error.digest]);
+  }, [error.name, error.message, error.digest]);
 
   return (
     <html lang="en">

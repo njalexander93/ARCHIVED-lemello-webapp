@@ -13,7 +13,7 @@ describe('GlobalError', () => {
 
   it('scrubs PII from fatal log payload', async () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const error = new Error('boom');
+    const error = new Error('boom user@example.com');
     error.name = 'Crash user@example.com';
     Object.assign(error, { digest: 'digest user@example.com' });
 
@@ -29,6 +29,7 @@ describe('GlobalError', () => {
     });
 
     const payload = String(errorSpy.mock.calls.at(-1)?.[0]);
+    expect(payload).toContain('errorMessage');
     expect(payload).toContain('[REDACTED]');
     expect(payload).not.toContain('user@example.com');
   });
