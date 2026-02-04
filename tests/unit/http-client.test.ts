@@ -59,6 +59,23 @@ describe('http client', () => {
     );
   });
 
+  it('returns undefined data for empty response bodies', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 204,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () => '',
+    });
+
+    const client = createHttpClient(() => undefined);
+    const result = await client<{ ok: boolean }>(
+      'https://api.example.com/no-content'
+    );
+
+    expect(result.status).toBe(204);
+    expect(result.data).toBeUndefined();
+  });
+
   it('throws HttpError when URL resolution fails', async () => {
     const client = createHttpClient(() => undefined, { baseUrl: '://invalid-base' });
 

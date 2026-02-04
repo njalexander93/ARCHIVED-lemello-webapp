@@ -39,7 +39,7 @@ export default function GlobalError({
     console.error(
       JSON.stringify(payload)
     );
-  }, [error]);
+  }, [error.name, error.digest]);
 
   return (
     <html lang="en">

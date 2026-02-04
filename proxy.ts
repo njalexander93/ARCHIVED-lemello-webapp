@@ -39,10 +39,10 @@ export function proxy(
     request: { headers: requestHeaders },
   });
   response.headers.set(CORRELATION_HEADER, correlationId);
+  const durationMs = Math.round(performance.now() - start);
 
   event.waitUntil(
     (async () => {
-      const durationMs = Math.round(performance.now() - start);
       const userAgent = request.headers.get('user-agent') ?? '';
 
       console.log(

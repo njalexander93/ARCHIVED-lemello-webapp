@@ -4,6 +4,8 @@
 
 import 'server-only';
 
+import { scrubString } from '@/lib/logger/pii-scrubber';
+
 /**
  * Registers server-side instrumentation on startup.
  *
@@ -54,7 +56,7 @@ export async function onRequestError(
       digest: error.digest,
       request: {
         method: request.method,
-        path: url.pathname,
+        path: scrubString(url.pathname),
       },
       context,
     },

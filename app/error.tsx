@@ -41,7 +41,7 @@ export default function Error({
       },
       'Client error boundary triggered'
     );
-  }, [correlationId, error]);
+  }, [correlationId, error.name, error.digest]);
 
   return (
     <div className="min-h-screen bg-[#fefefe] dark:bg-[#191a17] flex items-center justify-center p-8">

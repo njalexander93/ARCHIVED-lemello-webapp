@@ -4,10 +4,11 @@
 
 import type { CorrelationId } from '@/lib/correlation';
 import { CORRELATION_HEADER } from '@/lib/correlation';
+import { scrubString } from '@/lib/logger/pii-scrubber';
 import type { LogContext, Logger } from '@/lib/logger/types';
 
 export interface FetchResult<T> {
-  data: T;
+  data: T | undefined;
   status: number;
   durationMs: number;
   correlationId?: CorrelationId;
@@ -67,9 +68,12 @@ const resolveUrl = (input: string, baseUrl?: string): string => {
   return new URL(input, baseUrl).toString();
 };
 
-const parsePayload = <T>(bodyText: string, contentType: string): T => {
+const parsePayload = <T>(
+  bodyText: string,
+  contentType: string
+): T | undefined => {
   if (bodyText.length === 0) {
-    return undefined as T;
+    return undefined;
   }
 
   if (contentType.includes('application/json')) {
@@ -118,7 +122,7 @@ export function createHttpClient(
         correlationId,
         module: 'http-client',
         method: init.method ?? 'GET',
-        path: input,
+        path: scrubString(input),
       };
       logger.error(context, 'Invalid request URL', error as Error);
       throw new HttpError('Invalid request URL', 400, input, correlationId);
@@ -131,6 +135,7 @@ export function createHttpClient(
 
     const controller = new AbortController();
     const externalSignal = init.signal;
+    let externalAbortListenerAttached = false;
     let timedOut = false;
     const onExternalAbort = (): void => {
       controller.abort();
@@ -142,6 +147,7 @@ export function createHttpClient(
         externalSignal.addEventListener('abort', onExternalAbort, {
           once: true,
         });
+        externalAbortListenerAttached = true;
       }
     }
     const timeoutId = setTimeout(() => {
@@ -154,7 +160,7 @@ export function createHttpClient(
       correlationId,
       module: 'http-client',
       method: init.method ?? 'GET',
-      path: url,
+      path: scrubString(url),
     };
 
     logger.debug(baseContext, 'HTTP request started');
@@ -181,7 +187,7 @@ export function createHttpClient(
 
       const contentType = response.headers.get('content-type') ?? '';
       const bodyText = await response.text();
-      let payload: T;
+      let payload: T | undefined;
 
       try {
         payload = parsePayload<T>(bodyText, contentType);
@@ -218,7 +224,7 @@ export function createHttpClient(
       throw error;
     } finally {
       clearTimeout(timeoutId);
-      if (externalSignal) {
+      if (externalSignal && externalAbortListenerAttached) {
         externalSignal.removeEventListener('abort', onExternalAbort);
       }
     }

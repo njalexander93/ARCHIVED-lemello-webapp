@@ -54,20 +54,28 @@ export function CorrelationProvider({
   );
 
   useEffect(() => {
-    // Persist provided correlation IDs for the current session.
-    if (correlationId) {
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem(STORAGE_KEY, correlationId);
-      }
-      return;
-    }
-
     if (typeof window === 'undefined') {
       return;
     }
 
+    if (initialId) {
+      setCorrelationId(initialId);
+      try {
+        sessionStorage.setItem(STORAGE_KEY, initialId);
+      } catch {
+        // Ignore storage failures (privacy mode/quota) and keep in-memory ID.
+      }
+      return;
+    }
+
     // Reuse the session correlation ID if available.
-    const stored = sessionStorage.getItem(STORAGE_KEY);
+    let stored: string | null = null;
+    try {
+      stored = sessionStorage.getItem(STORAGE_KEY);
+    } catch {
+      // Ignore storage failures and fall back to generating an ID.
+    }
+
     if (isValidCorrelationId(stored)) {
       setCorrelationId(stored);
       return;
@@ -75,9 +83,13 @@ export function CorrelationProvider({
 
     // Generate a new ID when none exists.
     const generated = generateCorrelationId();
-    sessionStorage.setItem(STORAGE_KEY, generated);
+    try {
+      sessionStorage.setItem(STORAGE_KEY, generated);
+    } catch {
+      // Ignore storage failures (privacy mode/quota) and keep in-memory ID.
+    }
     setCorrelationId(generated);
-  }, [correlationId]);
+  }, [initialId]);
 
   const value = useMemo<CorrelationContextValue>(() => {
     return {

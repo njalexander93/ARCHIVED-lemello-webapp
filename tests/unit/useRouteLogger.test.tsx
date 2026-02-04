@@ -89,7 +89,7 @@ describe('useRouteLogger', () => {
     expect(clientLogger.clientLogger.info).not.toHaveBeenCalled();
   });
 
-  it('tracks navigation duration correctly', () => {
+  it('tracks navigation completion duration from pathname change', () => {
     mockUsePathname.mockReturnValue('/start');
     jest.spyOn(performance, 'now').mockReturnValue(1000);
 
@@ -97,16 +97,16 @@ describe('useRouteLogger', () => {
 
     jest.clearAllMocks();
 
-    // Navigate after 250ms.
+    // Simulate route transition completion.
     mockUsePathname.mockReturnValue('/destination');
     jest.spyOn(performance, 'now').mockReturnValue(1250);
 
     rerender();
 
-    // Verify duration is calculated correctly.
+    // Duration reflects pathname-change completion timing, not page dwell time.
     expect(clientLogger.clientLogger.info).toHaveBeenCalledWith(
       expect.objectContaining({
-        durationMs: 250,
+        durationMs: 0,
         fromPath: '/start',
         toPath: '/destination',
       }),
