@@ -1,5 +1,5 @@
 /**
- * @fileoverview Tailwind CSS configuration for the Lemello webapp.
+ * @fileoverview Tailwind CSS configuration for class scanning.
  */
 
 import type { Config } from 'tailwindcss';

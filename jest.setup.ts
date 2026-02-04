@@ -1,6 +1,5 @@
 /**
  * @fileoverview Jest setup for the Lemello webapp test suite.
- * Loads testing-library matchers and mocks Next.js utilities.
  */
 
 import '@testing-library/jest-dom';

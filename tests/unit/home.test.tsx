@@ -1,5 +1,5 @@
 /**
- * @fileoverview Unit tests for the Lemello landing page.
+ * @fileoverview Unit tests for the Lemello webapp landing page.
  */
 
 import { render, screen } from '@testing-library/react';

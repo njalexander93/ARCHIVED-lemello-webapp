@@ -1,5 +1,5 @@
 /**
- * @fileoverview Playwright configuration for webapp end-to-end tests.
+ * @fileoverview Playwright configuration for end-to-end tests.
  */
 
 import { defineConfig, devices } from '@playwright/test';
