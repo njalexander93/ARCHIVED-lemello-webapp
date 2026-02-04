@@ -6,6 +6,16 @@ import 'server-only';
 
 import { scrubString } from '@/lib/logger/pii-scrubber';
 
+const resolveRequestPath = (url: string): string => {
+  try {
+    return scrubString(new URL(url).pathname);
+  } catch {
+    // Keep error logging resilient if request.url is malformed.
+    const rawPath = url.split('?')[0] ?? url;
+    return scrubString(rawPath);
+  }
+};
+
 /**
  * Registers server-side instrumentation on startup.
  *
@@ -46,7 +56,7 @@ export async function onRequestError(
   }
 
   const { serverLogger } = await import('@/lib/logger/server');
-  const url = new URL(request.url);
+  const path = resolveRequestPath(request.url);
 
   serverLogger.error(
     {
@@ -56,7 +66,7 @@ export async function onRequestError(
       digest: error.digest,
       request: {
         method: request.method,
-        path: scrubString(url.pathname),
+        path,
       },
       context,
     },

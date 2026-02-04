@@ -57,6 +57,22 @@ const normalizeArgs = (
     };
   }
 
+  if (first instanceof Error) {
+    if (typeof rest[0] === 'string') {
+      return {
+        context: {},
+        message: rest[0],
+        extra: [first, ...rest.slice(1)],
+      };
+    }
+
+    return {
+      context: {},
+      message: first.message,
+      extra: [first, ...rest],
+    };
+  }
+
   if (first && typeof first === 'object') {
     if (typeof rest[0] === 'string') {
       return {

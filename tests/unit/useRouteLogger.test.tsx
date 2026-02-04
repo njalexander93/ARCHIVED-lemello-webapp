@@ -68,7 +68,7 @@ describe('useRouteLogger', () => {
         action: 'navigate',
         fromPath: '/initial',
         toPath: '/new-route',
-        durationMs: expect.any(Number),
+        elapsedSinceLastRouteMs: expect.any(Number),
       }),
       'Route change completed'
     );
@@ -89,7 +89,7 @@ describe('useRouteLogger', () => {
     expect(clientLogger.clientLogger.info).not.toHaveBeenCalled();
   });
 
-  it('tracks navigation completion duration from pathname change', () => {
+  it('tracks elapsed time between route commits', () => {
     mockUsePathname.mockReturnValue('/start');
     jest.spyOn(performance, 'now').mockReturnValue(1000);
 
@@ -103,10 +103,10 @@ describe('useRouteLogger', () => {
 
     rerender();
 
-    // Duration reflects pathname-change completion timing, not page dwell time.
+    // Duration now reflects time between route commits.
     expect(clientLogger.clientLogger.info).toHaveBeenCalledWith(
       expect.objectContaining({
-        durationMs: 0,
+        elapsedSinceLastRouteMs: 250,
         fromPath: '/start',
         toPath: '/destination',
       }),

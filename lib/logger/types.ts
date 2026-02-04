@@ -15,16 +15,9 @@ export interface LogContext {
   [key: string]: unknown;
 }
 
-export interface RequestLogContext extends LogContext {
-  // Request metadata for network/event logs.
-  method?: string;
-  path?: string;
-  statusCode?: number;
-  durationMs?: number;
-}
-
 export interface LogMethod {
   // Pino-style method overloads.
+  (err: Error, msg?: string, ...args: unknown[]): void;
   (obj: LogContext, msg?: string, ...args: unknown[]): void;
   (msg: string, ...args: unknown[]): void;
 }

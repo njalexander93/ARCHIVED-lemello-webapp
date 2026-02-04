@@ -48,6 +48,14 @@ describe('PII scrubber', () => {
       expect(result.self).toBe('[REDACTED]');
     });
 
+    it('handles circular arrays safely', () => {
+      // Circular arrays should also be redacted instead of recursing forever.
+      const input: unknown[] = [];
+      input.push(input);
+      const result = deepScrub(input);
+      expect(result[0]).toBe('[REDACTED]');
+    });
+
     it('respects maxDepth when scrubbing', () => {
       // Depth limit should stop recursion before deep redaction.
       const input = { level1: { level2: { level3: 'test@example.com' } } };

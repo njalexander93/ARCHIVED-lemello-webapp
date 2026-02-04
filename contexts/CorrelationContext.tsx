@@ -12,6 +12,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -49,8 +50,9 @@ export function CorrelationProvider({
   children,
   initialId,
 }: CorrelationProviderProps): ReactElement {
+  const initialIdRef = useRef(initialId);
   const [correlationId, setCorrelationId] = useState<CorrelationId | null>(
-    initialId ?? null
+    initialIdRef.current ?? null
   );
 
   useEffect(() => {
@@ -58,10 +60,11 @@ export function CorrelationProvider({
       return;
     }
 
-    if (initialId) {
-      setCorrelationId(initialId);
+    const initialCorrelationId = initialIdRef.current;
+    if (initialCorrelationId) {
+      setCorrelationId(initialCorrelationId);
       try {
-        sessionStorage.setItem(STORAGE_KEY, initialId);
+        sessionStorage.setItem(STORAGE_KEY, initialCorrelationId);
       } catch {
         // Ignore storage failures (privacy mode/quota) and keep in-memory ID.
       }
@@ -89,7 +92,7 @@ export function CorrelationProvider({
       // Ignore storage failures (privacy mode/quota) and keep in-memory ID.
     }
     setCorrelationId(generated);
-  }, [initialId]);
+  }, []);
 
   const value = useMemo<CorrelationContextValue>(() => {
     return {

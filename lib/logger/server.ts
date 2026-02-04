@@ -159,15 +159,3 @@ export async function withCorrelationId<T>(
 export function getCorrelationId(): string | undefined {
   return correlationStorage.getStore();
 }
-
-/**
- * Create a logger with merged context and correlation ID.
- *
- * @param context - Base log context for the child logger.
- * @returns Logger instance with context bound.
- */
-export function getContextualLogger(context: LogContext = {}): Logger {
-  const correlationId = getCorrelationId();
-  const bindings = correlationId ? { correlationId, ...context } : context;
-  return serverLogger.child(bindings);
-}

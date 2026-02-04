@@ -94,6 +94,14 @@ export function scrubString(value: string): string {
  * @returns Scrubbed copy of the input.
  */
 export function deepScrub<T>(input: T, maxDepth: number = 10): T {
+  if (typeof input === 'string') {
+    return scrubString(input) as T;
+  }
+
+  if (input === null || input === undefined || typeof input !== 'object') {
+    return input;
+  }
+
   const seen = new WeakSet<object>();
 
   const scrubValue = (value: unknown, depth: number): unknown => {
@@ -109,23 +117,24 @@ export function deepScrub<T>(input: T, maxDepth: number = 10): T {
       return value;
     }
 
-    if (Array.isArray(value)) {
-      return value.map((entry) => scrubValue(entry, depth + 1));
-    }
-
     if (typeof value !== 'object') {
       return value;
     }
 
-    const obj = value as Record<string, unknown>;
+    const obj = value as object;
     // Prevent infinite loops on circular references.
     if (seen.has(obj)) {
       return REDACTED_VALUE;
     }
     seen.add(obj);
 
+    if (Array.isArray(value)) {
+      return value.map((entry) => scrubValue(entry, depth + 1));
+    }
+
+    const objectValue = value as Record<string, unknown>;
     const result: Record<string, unknown> = {};
-    for (const [key, nested] of Object.entries(obj)) {
+    for (const [key, nested] of Object.entries(objectValue)) {
       const normalizedKey = key.toLowerCase();
       if (SENSITIVE_KEYS.has(normalizedKey)) {
         result[key] = REDACTED_VALUE;

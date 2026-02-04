@@ -50,6 +50,26 @@ describe('client logger', () => {
     });
   });
 
+  it('treats Error-first args as an error payload, not logger context', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const error = new Error('Failed for user@example.com');
+    const clientLogger = await loadClientLogger();
+
+    clientLogger.error(error, 'Fetch failed');
+
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    // dev output: [message, context, ...extra]
+    expect(errorSpy.mock.calls[0][1]).not.toEqual(
+      expect.objectContaining({
+        message: expect.anything(),
+        stack: expect.anything(),
+      })
+    );
+    const forwardedError = errorSpy.mock.calls[0][2] as Error;
+    expect(forwardedError.message).toContain('[REDACTED]');
+    expect(forwardedError.message).not.toContain('@');
+  });
+
   it('scrubs PII from message strings', async () => {
     const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
     const clientLogger = await loadClientLogger();

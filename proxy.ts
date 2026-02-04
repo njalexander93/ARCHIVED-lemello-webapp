@@ -39,11 +39,12 @@ export function proxy(
     request: { headers: requestHeaders },
   });
   response.headers.set(CORRELATION_HEADER, correlationId);
-  const durationMs = Math.round(performance.now() - start);
 
   event.waitUntil(
     (async () => {
       const userAgent = request.headers.get('user-agent') ?? '';
+      // This captures middleware processing time, not full request latency.
+      const proxyDurationMs = Math.max(0, Math.round(performance.now() - start));
 
       console.log(
         JSON.stringify({
@@ -53,7 +54,7 @@ export function proxy(
           correlationId,
           method: request.method,
           path: scrubString(request.nextUrl.pathname),
-          durationMs,
+          proxyDurationMs,
           userAgent: scrubString(userAgent.slice(0, 200)),
         })
       );
