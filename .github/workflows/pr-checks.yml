@@ -58,7 +58,13 @@ jobs:
           filters: |
             code:
               - 'app/**'
+              - 'contexts/**'
+              - 'examples/**'
+              - 'hooks/**'
+              - 'lib/**'
               - 'public/**'
+              - 'instrumentation.ts'
+              - 'proxy.ts'
               - 'package.json'
               - 'package-lock.json'
               - 'Dockerfile'

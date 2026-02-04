@@ -39,6 +39,40 @@ describe('http client', () => {
     );
   });
 
+  it('throws HttpError when successful responses contain invalid JSON', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () => '{invalid-json',
+    });
+
+    const client = createHttpClient(() => undefined);
+
+    await expect(client('https://api.example.com/bad-json')).rejects.toEqual(
+      expect.objectContaining({
+        name: 'HttpError',
+        status: 200,
+        url: 'https://api.example.com/bad-json',
+        message: 'HTTP response contained invalid JSON',
+      })
+    );
+  });
+
+  it('throws HttpError when URL resolution fails', async () => {
+    const client = createHttpClient(() => undefined, { baseUrl: '://invalid-base' });
+
+    await expect(client('/recipes')).rejects.toEqual(
+      expect.objectContaining({
+        name: 'HttpError',
+        status: 400,
+        url: '/recipes',
+        message: 'Invalid request URL',
+      })
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('enforces timeout when an external signal is provided', async () => {
     jest.useFakeTimers();
 

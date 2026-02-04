@@ -66,8 +66,8 @@ const REDACTED_VALUE = '[REDACTED]';
 // Pattern-based redaction for free-form strings.
 const PII_PATTERNS: Record<string, RegExp> = {
   email: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
-  // Matches international phone numbers: +1-555-123-4567, +44 20 7946 0958, (555) 123-4567, etc.
-  phone: /(\+?\d{1,4}[-.\s]?)?(\(?\d{1,4}\)?[-.\s]?)?(\d{1,4}[-.\s]?){1,4}\d{1,4}\b/g,
+  // Matches phone-like values with optional country code and separators.
+  phone: /\b(?:\+?\d{1,3}[-.\s()]*)?(?:\d[-.\s()]*){7,14}\d\b/g,
   ssn: /\b\d{3}-\d{2}-\d{4}\b/g,
   creditCard: /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g,
 };

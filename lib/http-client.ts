@@ -60,6 +60,12 @@ const timeoutFromEnv = resolveTimeoutMs(
     ? Number(process.env.NEXT_PUBLIC_HTTP_TIMEOUT_MS)
     : undefined
 );
+const resolveUrl = (input: string, baseUrl?: string): string => {
+  if (!baseUrl) {
+    return input;
+  }
+  return new URL(input, baseUrl).toString();
+};
 
 const parsePayload = <T>(bodyText: string, contentType: string): T => {
   if (bodyText.length === 0) {
@@ -104,12 +110,25 @@ export function createHttpClient(
     init: RequestInit = {}
   ): Promise<FetchResult<T>> => {
     const correlationId = getCorrelationId();
+    let url: string;
+    try {
+      url = resolveUrl(input, baseUrl);
+    } catch (error) {
+      const context: LogContext = {
+        correlationId,
+        module: 'http-client',
+        method: init.method ?? 'GET',
+        path: input,
+      };
+      logger.error(context, 'Invalid request URL', error as Error);
+      throw new HttpError('Invalid request URL', 400, input, correlationId);
+    }
+
     const headers = new Headers(init.headers ?? {});
     if (correlationId) {
       headers.set(CORRELATION_HEADER, correlationId);
     }
 
-    const url = baseUrl ? new URL(input, baseUrl).toString() : input;
     const controller = new AbortController();
     const externalSignal = init.signal;
     let timedOut = false;
@@ -162,7 +181,16 @@ export function createHttpClient(
 
       const contentType = response.headers.get('content-type') ?? '';
       const bodyText = await response.text();
-      const payload = parsePayload<T>(bodyText, contentType);
+      let payload: T;
+
+      try {
+        payload = parsePayload<T>(bodyText, contentType);
+      } catch (error) {
+        if (error instanceof SyntaxError && contentType.includes('application/json')) {
+          throw new HttpError('HTTP response contained invalid JSON', status, url, correlationId);
+        }
+        throw error;
+      }
 
       logger.info(logContext, 'HTTP request completed');
       return { data: payload, status, durationMs, correlationId };
@@ -196,5 +224,3 @@ export function createHttpClient(
     }
   };
 }
-
-export const httpClient = createHttpClient(() => undefined);
