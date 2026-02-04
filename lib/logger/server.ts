@@ -99,6 +99,10 @@ const createLogger = (): Logger => {
     const logger = pino({
       level: logLevel,
       hooks,
+      mixin: () => {
+        const correlationId = correlationStorage.getStore();
+        return correlationId ? { correlationId } : {};
+      },
       transport: {
         target: 'pino-pretty',
         options: {
@@ -118,6 +122,10 @@ const createLogger = (): Logger => {
   const logger = pino({
     level: logLevel,
     hooks,
+    mixin: () => {
+      const correlationId = correlationStorage.getStore();
+      return correlationId ? { correlationId } : {};
+    },
     redact: {
       paths: [...REDACT_PATHS],
       censor: '[REDACTED]',

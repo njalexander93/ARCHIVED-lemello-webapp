@@ -16,6 +16,22 @@ const loadServerLogger = async (): Promise<Logger> => {
   return module.serverLogger;
 };
 
+const loadServerModule = async (): Promise<{
+  serverLogger: Logger;
+  withCorrelationId: <T>(
+    correlationId: string,
+    callback: () => Promise<T>
+  ) => Promise<T>;
+}> => {
+  jest.resetModules();
+  mutableEnv.NODE_ENV = 'production';
+  const module = await import('@/lib/logger/server');
+  return {
+    serverLogger: module.serverLogger,
+    withCorrelationId: module.withCorrelationId,
+  };
+};
+
 describe('server logger', () => {
   const flush = async (): Promise<void> => {
     await new Promise((resolve) => setImmediate(resolve));
@@ -97,5 +113,29 @@ describe('server logger', () => {
     const output = writeSpy.mock.calls.map(([chunk]) => String(chunk)).join('\n');
     expect(output).not.toContain('user@example.com');
     expect(output).toContain('"type":"Error"');
+  });
+
+  it('auto-injects correlationId from AsyncLocalStorage into server logs', async () => {
+    mutableEnv.LOG_LEVEL = 'info';
+    const writeSpy = jest
+      .spyOn(process.stdout, 'write')
+      .mockImplementation(() => true);
+    const { serverLogger, withCorrelationId } = await loadServerModule();
+    writeSpy.mockClear();
+
+    await withCorrelationId(
+      '00000000-0000-7000-8000-000000000001',
+      async () => {
+        serverLogger.info(
+          { module: 'server-logger', action: 'als-correlation' },
+          'Correlation test'
+        );
+      }
+    );
+
+    await flush();
+
+    const output = writeSpy.mock.calls.map(([chunk]) => String(chunk)).join('\n');
+    expect(output).toContain('"correlationId":"00000000-0000-7000-8000-000000000001"');
   });
 });

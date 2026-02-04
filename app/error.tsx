@@ -37,11 +37,12 @@ export default function Error({
         module: 'ErrorBoundary',
         action: 'segment_error',
         errorName: error.name,
+        errorMessage: error.message,
         digest: error.digest,
       },
       'Client error boundary triggered'
     );
-  }, [correlationId, error.name, error.digest]);
+  }, [correlationId, error.name, error.message, error.digest]);
 
   return (
     <div className="min-h-screen bg-[#fefefe] dark:bg-[#191a17] flex items-center justify-center p-8">
