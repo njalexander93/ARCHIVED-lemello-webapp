@@ -5,6 +5,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
+import { useEffect } from 'react';
 
 import { useCorrelationId } from '@/contexts/CorrelationContext';
 import { clientLogger } from '@/lib/logger/client';
@@ -18,11 +19,13 @@ export function ExampleClientComponent(): ReactElement {
   // Correlation ID is provided by CorrelationProvider in app layout.
   const correlationId = useCorrelationId();
 
-  // Client-side logger usage: include correlation ID for tracing.
-  clientLogger.info(
-    { correlationId, module: 'ExampleClientComponent', action: 'render' },
-    'Client component rendered'
-  );
+  useEffect(() => {
+    // Client-side logger usage: include correlation ID for tracing.
+    clientLogger.info(
+      { correlationId, module: 'ExampleClientComponent', action: 'mount' },
+      'Client component mounted'
+    );
+  }, [correlationId]);
 
   return <div>Logging example</div>;
 }

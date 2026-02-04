@@ -181,7 +181,6 @@ export function createHttpClient(
       };
 
       if (!response.ok) {
-        logger.warn(logContext, 'HTTP request failed');
         throw new HttpError('HTTP request failed', status, url, correlationId);
       }
 
@@ -205,7 +204,11 @@ export function createHttpClient(
       const logContext: LogContext = { ...baseContext, durationMs };
 
       if (error instanceof HttpError) {
-        logger.error(logContext, error.message, error);
+        if (error.message === 'HTTP request failed' && error.status < 500) {
+          logger.warn(logContext, error.message, error);
+        } else {
+          logger.error(logContext, error.message, error);
+        }
         throw error;
       }
 

@@ -150,12 +150,3 @@ export async function withCorrelationId<T>(
 ): Promise<T> {
   return correlationStorage.run(correlationId, callback);
 }
-
-/**
- * Retrieve the current correlation ID for server logs.
- *
- * @returns The current correlation ID if set in the current async context.
- */
-export function getCorrelationId(): string | undefined {
-  return correlationStorage.getStore();
-}

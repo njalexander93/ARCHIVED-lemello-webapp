@@ -3,6 +3,7 @@
  */
 
 import { createHttpClient } from '@/lib/http-client';
+import type { Logger } from '@/lib/logger/types';
 
 describe('http client', () => {
   let fetchMock: jest.Mock;
@@ -37,6 +38,38 @@ describe('http client', () => {
         url: 'https://api.example.com/fail',
       })
     );
+  });
+
+  it('logs non-OK responses once without duplicate entries', async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 404,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () => '{"error":"not found"}',
+    });
+
+    const logger = {
+      trace: jest.fn(),
+      debug: jest.fn(),
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      fatal: jest.fn(),
+      child: jest.fn(),
+    } as unknown as Logger;
+    (logger.child as unknown as jest.Mock).mockReturnValue(logger);
+
+    const client = createHttpClient(() => undefined, { logger });
+
+    await expect(client('https://api.example.com/missing')).rejects.toEqual(
+      expect.objectContaining({
+        name: 'HttpError',
+        status: 404,
+      })
+    );
+
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it('throws HttpError when successful responses contain invalid JSON', async () => {
