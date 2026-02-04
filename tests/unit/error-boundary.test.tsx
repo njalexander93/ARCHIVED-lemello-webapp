@@ -23,7 +23,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('logs errorMessage in the segment error payload', async () => {
-    const error = new Error('Segment failure user@example.com');
+    const error = new Error('Segment failure');
     error.name = 'SegmentError';
     Object.assign(error, { digest: 'digest-123' });
 
@@ -43,7 +43,7 @@ describe('ErrorBoundary', () => {
         module: 'ErrorBoundary',
         action: 'segment_error',
         errorName: 'SegmentError',
-        errorMessage: 'Segment failure user@example.com',
+        errorMessage: 'Segment failure',
         digest: 'digest-123',
       }),
       'Client error boundary triggered'
