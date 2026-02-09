@@ -1,5 +1,10 @@
 <h1><img src=".github/assets/lemello-horizontal-yellow.svg" alt="Lemello" height="28px"> Web App</h1>
 
+[![Release](https://img.shields.io/badge/release-view-blue?logo=github&logoColor=white)](https://github.com/lemello-app/webapp/releases)
+[![CI/CD](https://github.com/lemello-app/webapp/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/lemello-app/webapp/actions/workflows/release.yml)
+[![Node](https://img.shields.io/badge/node-24-blue?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/license-Proprietary-red)](#license)
+
 The user-facing Progressive Web Application for Lemello — an AI-powered cooking platform that transforms nervous recipe-followers into confident recipe-creators.
 
 ---

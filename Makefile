@@ -1,7 +1,7 @@
 # Lemello Webapp - Development Commands
 # Usage: make <target>
 
-.PHONY: help install test test-unit test-integration test-e2e lint type-check format format-check clean dev build start ci
+.PHONY: help install test test-unit test-integration test-e2e lint type-check format format-check clean dev build start ci bump-major bump-minor bump-patch
 
 help:  ## Show this help message
 	@echo "Lemello Webapp - Available commands:"
@@ -52,3 +52,12 @@ ci:  ## Run all CI checks (lint, type-check, test)
 	@make type-check
 	@make test
 	@echo "✅ All CI checks passed!"
+
+bump-major:  ## Bump major version and update package-lock.json
+	npm version major --no-git-tag-version
+
+bump-minor:  ## Bump minor version and update package-lock.json
+	npm version minor --no-git-tag-version
+
+bump-patch:  ## Bump patch version and update package-lock.json
+	npm version patch --no-git-tag-version
