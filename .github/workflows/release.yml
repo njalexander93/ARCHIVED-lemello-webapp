@@ -1,4 +1,4 @@
-name: Release Pipeline
+name: CI/CD
 
 on:
   push:
@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   test:
-    name: Full Test Suite
+    name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -55,7 +55,7 @@ jobs:
         run: npm run test:e2e:ci
 
   build-and-release:
-    name: Build and Release
+    name: Continuous Deployment
     needs: test
     runs-on: ubuntu-latest
     steps:
