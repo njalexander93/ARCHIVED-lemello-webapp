@@ -45,18 +45,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   version-check:
-    name: Version Duplicate Check
+    name: Duplicate Version Check
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Check for code changes
+      - name: Check for Image-Impacting Changes
         uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            code:
+            release_paths:
               - 'app/**'
               - 'contexts/**'
               - 'examples/**'
@@ -65,23 +65,22 @@ jobs:
               - 'public/**'
               - 'instrumentation.ts'
               - 'proxy.ts'
-              - 'package.json'
               - 'package-lock.json'
               - 'Dockerfile'
               - 'next.config.ts'
               - 'tailwind.config.ts'
               - 'tsconfig.json'
 
-      - name: Extract version from package.json
-        if: steps.filter.outputs.code == 'true'
+      - name: Get PR Version
+        if: steps.filter.outputs.release_paths == 'true'
         id: version
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Found version: $VERSION"
 
-      - name: Check if release exists
-        if: steps.filter.outputs.code == 'true'
+      - name: Check Duplicate Version
+        if: steps.filter.outputs.release_paths == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
@@ -102,35 +101,69 @@ jobs:
           fi
           echo "✅ Version v$VERSION is unique"
 
-      - name: Skip version check for docs-only changes
-        if: steps.filter.outputs.code == 'false'
+      - name: Skip Version Check
+        if: steps.filter.outputs.release_paths == 'false'
         run: |
-          echo "✅ Only documentation/scripts changed - version check skipped"
+          echo "✅ Non-release change - version check skipped"
 
   test-suite:
-    name: Lint, Type Check, and Tests
+    name: Pre-Merge Checks
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Check Image, Test, and Tooling Changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            release_paths:
+              - 'app/**'
+              - 'contexts/**'
+              - 'examples/**'
+              - 'hooks/**'
+              - 'lib/**'
+              - 'public/**'
+              - 'instrumentation.ts'
+              - 'proxy.ts'
+              - 'package-lock.json'
+              - 'Dockerfile'
+              - 'next.config.ts'
+              - 'tailwind.config.ts'
+              - 'tsconfig.json'
+              - 'tests/**'
+            tooling_paths:
+              - '.github/workflows/pr-checks.yml'
+
       - name: Set up Node.js 24
+        if: steps.filter.outputs.release_paths == 'true' || steps.filter.outputs.tooling_paths == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "24"
           cache: "npm"
 
       - name: Install dependencies
+        if: steps.filter.outputs.release_paths == 'true' || steps.filter.outputs.tooling_paths == 'true'
         run: npm ci
 
       - name: Run ESLint
+        if: steps.filter.outputs.release_paths == 'true' || steps.filter.outputs.tooling_paths == 'true'
         run: npm run lint
 
       - name: Run TypeScript type check
+        if: steps.filter.outputs.release_paths == 'true' || steps.filter.outputs.tooling_paths == 'true'
         run: npm run typecheck
 
       - name: Run unit tests
+        if: steps.filter.outputs.release_paths == 'true' || steps.filter.outputs.tooling_paths == 'true'
         run: npm run test:unit
 
       - name: Run integration tests
+        if: steps.filter.outputs.release_paths == 'true' || steps.filter.outputs.tooling_paths == 'true'
         run: npm run test:integration
+
+      - name: Skip Pre-Merge Checks
+        if: steps.filter.outputs.release_paths == 'false' && steps.filter.outputs.tooling_paths == 'false'
+        run: |
+          echo "✅ Only non-impactful paths changed - pre-merge checks skipped"

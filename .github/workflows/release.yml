@@ -3,12 +3,22 @@ name: CI/CD
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '**.md'           # Skip markdown files (README, docs)
-      - 'docs/**'         # Skip docs directory
-      - 'scripts/**'      # Skip utility/test scripts
-      - 'LICENSE'         # Skip license changes
-      - '.gitignore'      # Skip gitignore changes
+    paths:
+      - 'tests/**'
+      - '.github/workflows/release.yml'
+      - 'app/**'
+      - 'contexts/**'
+      - 'examples/**'
+      - 'hooks/**'
+      - 'lib/**'
+      - 'public/**'
+      - 'instrumentation.ts'
+      - 'proxy.ts'
+      - 'next.config.ts'
+      - 'tailwind.config.ts'
+      - 'tsconfig.json'
+      - 'Dockerfile'
+      - 'package-lock.json'
 
 # Prevent concurrent releases - queue them instead
 concurrency:
@@ -24,7 +34,7 @@ jobs:
     name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Set up Node.js 24
@@ -33,7 +43,7 @@ jobs:
           node-version: "24"
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
       - name: Install Playwright browsers
@@ -45,13 +55,13 @@ jobs:
       - name: Run TypeScript type check
         run: npm run typecheck
 
-      - name: Run unit tests
+      - name: Run Unit Tests
         run: npm run test:unit
 
-      - name: Run integration tests
+      - name: Run Integration Tests
         run: npm run test:integration
 
-      - name: Run e2e tests
+      - name: Run E2E Tests
         run: npm run test:e2e:ci
 
   build-and-release:
@@ -59,17 +69,39 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Extract version
+      - name: Check for release-path changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            release_paths:
+              - 'app/**'
+              - 'contexts/**'
+              - 'examples/**'
+              - 'hooks/**'
+              - 'lib/**'
+              - 'public/**'
+              - 'instrumentation.ts'
+              - 'proxy.ts'
+              - 'next.config.ts'
+              - 'tailwind.config.ts'
+              - 'tsconfig.json'
+              - 'Dockerfile'
+              - 'package-lock.json'
+
+      - name: Extract Version
+        if: steps.filter.outputs.release_paths == 'true'
         id: version
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Building version: $VERSION"
 
-      - name: Verify version is unique
+      - name: Check Duplicate Version
+        if: steps.filter.outputs.release_paths == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -83,13 +115,15 @@ jobs:
           echo "✅ Version v${{ steps.version.outputs.version }} is unique"
 
       - name: Log in to GitHub Container Registry
+        if: steps.filter.outputs.release_paths == 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and Push Docker Image
+        if: steps.filter.outputs.release_paths == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -101,6 +135,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/webapp:latest
 
       - name: Create GitHub Release
+        if: steps.filter.outputs.release_paths == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -116,3 +151,7 @@ jobs:
             ### Changes
             See commit history for details." \
             --repo ${{ github.repository }}
+
+      - name: Skip deployment for non-release changes
+        if: steps.filter.outputs.release_paths == 'false'
+        run: echo "✅ No release-path changes detected; deployment skipped."
