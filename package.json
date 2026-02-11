@@ -1,6 +1,6 @@
 {
   "name": "lemello-webapp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Core web app for Lemello, built with Next.js. Handles the user experience for recipe creation, discovery, and social cooking.",
   "author": "Nikolai Alexander <njalexander93@gmail.com>",
