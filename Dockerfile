@@ -70,10 +70,13 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy standalone output from builder
-COPY --from=builder /app/.next/standalone ./
+# Copy full standalone output to preserve Next.js traced runtime files.
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+
+# Do not ship build-time env files or standalone package metadata.
+RUN rm -f /app/package.json /app/.env*
 
 # Change ownership to non-root user
 RUN chown -R nextjs:nodejs /app
